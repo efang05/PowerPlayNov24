@@ -11,6 +11,4 @@ public class LiftConstants {
     public static double HIGHJUNCTION = 35;
     public static double IdleHeight = 3;
     public static double IntakingHeight = 0.5;
-
-    public static int FrontTurret = 0;
 }

@@ -30,7 +30,6 @@ public class Robot {
         arm = new Arm(hardwareMap, telemetry);
         turret = new Turret(hardwareMap, telemetry);
 
-
         subsystems = new ArrayList<>();
         subsystems.add(drive);
         subsystems.add(lift);
