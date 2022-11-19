@@ -8,7 +8,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.drive.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystem.drive.Drivetrain123;
 
 
 /*
@@ -17,13 +19,13 @@ import org.firstinspires.ftc.teamcode.subsystem.drive.Drivetrain;
 @Config
 @Autonomous(group = "drive")
 public class StraightTest extends LinearOpMode {
-    public static double DISTANCE = 60; // in
+    public static double DISTANCE = 10; // in
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Drivetrain drive = new Drivetrain(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
                 .forward(DISTANCE)

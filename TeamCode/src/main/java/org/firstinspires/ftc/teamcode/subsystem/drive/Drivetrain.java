@@ -32,6 +32,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.roadrunner.util.AxisDirection;
+import org.firstinspires.ftc.teamcode.roadrunner.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.roadrunner.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
 
@@ -50,15 +52,17 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.enc
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kV;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
 public class Drivetrain extends MecanumDrive implements Subsystem {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0.4);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0.4);
-
+    //public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0.4);
+    //public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0.4);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
     public static double LATERAL_MULTIPLIER = 1.0;
 
     public static double VX_WEIGHT = 1;
@@ -118,7 +122,7 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
         // and the placement of the dot/orientation from https://docs.revrobotics.com/rev-control-system/control-system-overview/dimensions#imu-location
         //
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
-        // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
+        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
@@ -126,6 +130,11 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        // facing backward for auto
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+//        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+//        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -144,8 +153,6 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
 //        }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));

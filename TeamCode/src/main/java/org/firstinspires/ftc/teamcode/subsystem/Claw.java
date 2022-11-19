@@ -20,7 +20,7 @@ public class Claw implements Subsystem {
     @Override
     public void init() {
         SetClaw1Position(RobotConstants.CLAWCLOSEPOS1);
-        SetClaw2Position(RobotConstants.CLAWCLOSEPOS2);
+        SetClaw2Position(1 - RobotConstants.CLAWCLOSEPOS1);
     }
 
     @Override
@@ -40,11 +40,11 @@ public class Claw implements Subsystem {
     }
     public void ClawOpen(){
         clawServo1.setPosition(RobotConstants.CLAWOPENPOS1);
-        clawServo2.setPosition(RobotConstants.CLAWOPENPOS2);
+        clawServo2.setPosition(1 - RobotConstants.CLAWOPENPOS1);
     }
     public void ClawClose(){
         clawServo1.setPosition(RobotConstants.CLAWCLOSEPOS1);
-        clawServo2.setPosition(RobotConstants.CLAWCLOSEPOS2);
+        clawServo2.setPosition(1 - RobotConstants.CLAWCLOSEPOS1);
     }
 
 }

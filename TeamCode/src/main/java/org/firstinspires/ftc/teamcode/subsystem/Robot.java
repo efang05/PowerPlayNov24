@@ -13,9 +13,6 @@ public class Robot {
     private HardwareMap hardwareMap;
 
     public Lift lift;
-    public Claw claw;
-    public Turret turret;
-    public Arm arm;
     public Drivetrain drive;
 
     private ArrayList<Subsystem> subsystems;
@@ -26,17 +23,12 @@ public class Robot {
 
         drive = new Drivetrain(hardwareMap);
         lift = new Lift(hardwareMap, telemetry);
-        claw = new Claw(hardwareMap, telemetry);
-        arm = new Arm(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry);
 
         subsystems = new ArrayList<>();
         subsystems.add(drive);
         subsystems.add(lift);
-        subsystems.add(claw);
-        subsystems.add(arm);
-        subsystems.add(turret);
     }
+
 
     //Initializes hardware - NOTE: moves servos
     public void init() {

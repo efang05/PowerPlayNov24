@@ -31,9 +31,9 @@ public class SleeveDetection extends OpenCvPipeline {
     /*
      * The core values which define the location and size of the sample regions
      */
-    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(300,160);
-    static final int REGION_WIDTH = 40;
-    static final int REGION_HEIGHT = 40;
+    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(140,125);
+    static final int REGION_WIDTH = 30;
+    static final int REGION_HEIGHT = 30;
 
     /*
      * Points which actually define the sample region rectangles, derived from above values
@@ -67,6 +67,7 @@ public class SleeveDetection extends OpenCvPipeline {
     Mat Cb = new Mat();
     Mat Cr = new Mat();
     int avgCb, avgCr;
+    int frameCnt = 0;
 
     // Volatile since accessed by OpMode thread w/o synchronization
     private volatile Color color = Color.RED;
@@ -108,7 +109,7 @@ public class SleeveDetection extends OpenCvPipeline {
          */
         region_Cb = Cb.submat(new Rect(region_pointA, region_pointB));
         region_Cr = Cr.submat(new Rect(region_pointA, region_pointB));
-
+        frameCnt++;
     }
 
     @Override
@@ -153,7 +154,7 @@ public class SleeveDetection extends OpenCvPipeline {
          * Get the Cb channel of the input frame after conversion to YCrCb
          */
         inputToCrCb(input);
-
+        frameCnt++;
         /*
          * Compute the average pixel value of each submat region. We're
          * taking the average of a single channel buffer, so the value
@@ -173,15 +174,15 @@ public class SleeveDetection extends OpenCvPipeline {
                 region_pointA, // First point which defines the rectangle
                 region_pointB, // Second point which defines the rectangle
                 BLUE, // The color the rectangle is drawn in
-                2); // Thickness of the rectangle lines
+                3); // Thickness of the rectangle lines
 
         /*
          * Now that we found the max, we actually need to go and
          * figure out which sample region that value was from
          */
-        if(avgCr > 140) // Did it have high red hue?
+        if(avgCr > 130) // Did it have high red hue?
         {
-            if(avgCb > 140) { //Did it have high blue hue with it?
+            if(avgCb > 130) { //Did it have high blue hue with it?
 
                 color = Color.MAGENTA;
                 /*
@@ -192,8 +193,8 @@ public class SleeveDetection extends OpenCvPipeline {
                         input, // Buffer to draw on
                         region_pointA, // First point which defines the rectangle
                         region_pointB, // Second point which defines the rectangle
-                        MAGENTA, // The color the rectangle is drawn in
-                        -1); // Negative thickness means solid fill
+                        MAGENTA, // The color the rectangle is draw`n in
+                        4); // Negative thickness means solid fill
 
             }
             else {
@@ -207,7 +208,7 @@ public class SleeveDetection extends OpenCvPipeline {
                         region_pointA, // First point which defines the rectangle
                         region_pointB, // Second point which defines the rectangle
                         RED, // The color the rectangle is drawn in
-                        -1); // Negative thickness means solid fill
+                        4); // Negative thickness means solid fill
             }
         }
         else if(avgCb > 140) // Did it only have blue hue?
@@ -222,13 +223,14 @@ public class SleeveDetection extends OpenCvPipeline {
                     region_pointA, // First point which defines the rectangle
                     region_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
-                    -1); // Negative thickness means solid fill
+                    4); // Negative thickness means solid fill
         }
 
 
         telemetry.addData("[Pattern]", color);
         telemetry.addData("Cb:", avgCb);
         telemetry.addData("Cr:", avgCr);
+        telemetry.addData("frame:", frameCnt);
         telemetry.update();
 
         /*

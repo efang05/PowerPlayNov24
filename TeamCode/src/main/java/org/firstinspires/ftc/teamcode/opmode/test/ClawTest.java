@@ -18,6 +18,8 @@ public class ClawTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        GamepadEx gamepadEx1;
+        gamepadEx1 = new GamepadEx(gamepad1);
         claw = new Claw(hardwareMap, telemetry);
 
         waitForStart();
