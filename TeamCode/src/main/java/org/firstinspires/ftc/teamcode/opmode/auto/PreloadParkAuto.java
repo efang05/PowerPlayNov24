@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystem.Robot;
-import org.firstinspires.ftc.teamcode.subsystem.RobotConstants;
 import org.firstinspires.ftc.teamcode.subsystem.SleeveDetector;
 import org.firstinspires.ftc.teamcode.subsystem.lift.LiftConstants;
 

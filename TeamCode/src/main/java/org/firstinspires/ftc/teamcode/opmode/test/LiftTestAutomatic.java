@@ -4,14 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystem.oldlift.Lift;
+import org.firstinspires.ftc.teamcode.subsystem.lift.Lift;
 
 @TeleOp
 @Config
 public class LiftTestAutomatic extends LinearOpMode {
     private Lift lift;
 
-    public static double targetHeight = 0;
+    public static double targetHeight = 3;
 
     @Override
     public void runOpMode() throws InterruptedException {

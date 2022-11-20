@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystem.drive.Drivetrain123;
 
 /*
  * This is a simple routine to test translational drive capabilities.

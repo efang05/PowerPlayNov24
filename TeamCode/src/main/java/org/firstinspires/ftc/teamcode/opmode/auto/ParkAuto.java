@@ -13,7 +13,7 @@ public class ParkAuto extends LinearOpMode {
     Pose2d START_POSE = new Pose2d(36, -64, Math.PI / 2);
     Robot robot;
     SleeveDetector detector = new SleeveDetector();
-    SleeveDetection.Color parkingPos = SleeveDetection.Color.MAGENTA;
+    SleeveDetection.Color parkingPos = SleeveDetection.Color.RED;
 
     public void runOpMode() {
         robot = new Robot(telemetry, hardwareMap);

@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystem.drive.Drivetrain123;
 
 /*
  * This is an example of a more complex path to really test the tuning.
