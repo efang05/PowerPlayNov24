@@ -22,7 +22,7 @@ public class CooperTele extends LinearOpMode {
     double turretspeed = 0.4;
     double turretaddition = 40;
     double dtspeed = 1;
-    double up = 34.5;
+    double up = 37;
     double mid = 22.5;
     double low = 10.5;
     double ground = -1;
@@ -76,15 +76,16 @@ public class CooperTele extends LinearOpMode {
             } else{
                     dtspeed = 1;
             }
-//
-//            double ArmPower = gamepad2.right_stick_y;
-//            if(robotState == robotState.LIFTED || robotState == robotState.INTAKING) {
-//                if(ArmPower > 0.5){
-//                    robot.lift.setArmPos(robot.lift.getArmPosition()+0.05);
-//                }else if(ArmPower < 0.5){
-//                    robot.lift.setArmPos(robot.lift.getArmPosition()-0.05);
-//                }
-//            }
+
+            double ArmPower = gamepad2.right_stick_y;
+            if(robotState == robotState.LIFTED || robotState == robotState.INTAKING) {
+                if(ArmPower > 0.5){
+                    robot.lift.setArmPos(robot.lift.getArmPosition()+0.05);
+                }else if(ArmPower < 0.5){
+                    robot.lift.setArmPos(robot.lift.getArmPosition()-0.05);
+                }
+            }
+
             double TurretPower = gamepad2.right_stick_x;
             if (canTurn = true) {
                 if(TurretPower>0.5){

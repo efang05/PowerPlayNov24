@@ -4,10 +4,14 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.subsystem.SleeveDetector;
+import org.firstinspires.ftc.teamcode.subsystem.lift.Lift;
+import org.firstinspires.ftc.teamcode.subsystem.lift.LiftConstants;
 
 @Autonomous
 public class RightRedSideAuto extends LinearOpMode {
@@ -23,6 +27,7 @@ public class RightRedSideAuto extends LinearOpMode {
     Pose2d PARKING2_POSE = new Pose2d(35, -36, 0);
     Pose2d PARKING3_POSE = new Pose2d(62, -36, 0);
     // inches
+    private ElapsedTime timer;
     double[] CONESTACKSTEPHEIGHT = {1.38, 1.38, 1.38, 1.38};
     double[] CONESTACKINITHEIGHT = {1.38, 1.38, 1.38, 1.38};
 
@@ -38,6 +43,8 @@ public class RightRedSideAuto extends LinearOpMode {
 
     public void runOpMode() {
         robot = new Robot(telemetry, hardwareMap);
+        SleeveDetector detector = new SleeveDetector();
+        SleeveDetection.Color parkingPos = SleeveDetection.Color.BLUE;
         ElapsedTime timer = new ElapsedTime();
         detector.init(hardwareMap, telemetry);
 
@@ -45,97 +52,91 @@ public class RightRedSideAuto extends LinearOpMode {
 //        frontSensor = hardwareMap.get(AnalogInput.class, "frontSensor");
 //        rightSensor = hardwareMap.get(AnalogInput.class, "rightSensor");
 
-        // Init
-//        robot.lift.setTargetHeight(0);
-//        robot.turret.setPosition(RobotConstants.FrontTurret);
-//        robot.arm.setArm1Position(RobotConstants.ARM1INIT);
-//        robot.arm.setArm2Position(RobotConstants.ARM2INIT);
-//        robot.claw.ClawClose();
+        //Init
+        robot.lift.setClaw1Pos(LiftConstants.CLAWCLOSEPOS1);
+        if(timer.seconds()>1) {
+            robot.lift.setTargetHeight(LiftConstants.IdleArm);
+            robot.lift.setArmPos(LiftConstants.IdleArm);
+        }
 
-//        TrajectorySequence preloadCycle = robot.drive.trajectorySequenceBuilder(START_POSE)
-//            .splineTo(PRELOAD_POSE, Math.PI / 6)
-//            .waitSeconds(0.4)
-//            .addTemporalMarker(0.3, () -> {
-//                switch (liftPosition) {
-//                    case 3:
-////                        robot.lift.setTargetHeight(15);
-//                        break;
-//                    case 2:
-////                        robot.lift.setTargetHeight(RobotConstants.MIDJUNCTION);
-//                        break;
-//                    case 1:
-////                        robot.lift.setTargetHeight(RobotConstants.LOWJUNCTION);
-//                        break;
-//                }
-//            })
-//            .addTemporalMarker(0.5, () -> {
-////                robot.arm.setArm1Position(RobotConstants.DROPPINGARM);
-////                robot.arm.setArm2Position(RobotConstants.DROPPINGARM);
-//            })
-//            .addTemporalMarker(0.9, () -> robot.claw.ClawOpen())
-//            .addTemporalMarker(1.3, () -> {
-//                robot.claw.ClawClose();
-//            })
-//            .setReversed(false)
-//            .lineToLinearHeading(PRELOADPOSCHANGE1_POSE)
-//            .addTemporalMarker(1, () -> {
-//                robot.lift.setTargetHeight(0);
-//                robot.turret.setPosition(RobotConstants.FrontTurret);
-//                robot.arm.setArm1Position(RobotConstants.ARM1INIT);
-//                robot.arm.setArm2Position(RobotConstants.ARM2INIT);
-//            })
-//            .lineToLinearHeading(PRELOADSTOP_POSE)
-//            .build();
-//
-//        TrajectorySequence[] regularCycles = new TrajectorySequence[4];
-//
-//        for (int i = 0; i < 4; i++) {
-//            double cone_height = CONESTACKINITHEIGHT[i];
-//            regularCycles[i] = robot.drive.trajectorySequenceBuilder(PRELOADSTOP_POSE)
-//                .setReversed(true)
-//                .splineToConstantHeading(CYCLEMIDPOINT, Math.toRadians(0))
-//                .addTemporalMarker(0.2, () -> {
-//                    robot.lift.setTargetHeight(cone_height);
-//                    robot.turret.setPosition(RobotConstants.BackTurret);
-//                })
-//                .lineTo(CONESTACK)
-//                .addTemporalMarker(0.35, () -> {
-//                    robot.arm.setArm1Position(RobotConstants.IntakingArm);
-//                    robot.arm.setArm2Position(RobotConstants.IntakingArm);
-//                    robot.claw.ClawClose();
-//                })
-//                .addTemporalMarker(1.5, () -> {
-//                    robot.lift.setTargetHeight(RobotConstants.HIGHJUNCTION);
-//                    robot.turret.setPosition(RobotConstants.FrontTurret);
-//                })
-//                .setReversed(false)
-//                .lineTo(CYCLEMIDPOINT)
-//                .addTemporalMarker(1.8, () -> {
-//                    robot.arm.setArm1Position(RobotConstants.DROPPINGARM);
-//                    robot.arm.setArm2Position(RobotConstants.DROPPINGARM);
-//                })
-//                .splineToConstantHeading(HIGHPOLE_POSE.vec(), Math.PI / 2)
-//                .addTemporalMarker(2.6, () -> {
-//                    robot.arm.setArm1Position(RobotConstants.IntakingArm);
-//                    robot.arm.setArm2Position(RobotConstants.IntakingArm);
-//                    robot.claw.ClawOpen();
-//                })
-//                .build();
-//        }
-//
-//        TrajectorySequence parking = robot.drive.trajectorySequenceBuilder(HIGHPOLE_POSE)
-//            .setReversed(true)
-//            .lineToLinearHeading(PARKINGPREP_POSE)
-//            .addTemporalMarker(1, () -> {
-//                robot.turret.setPosition(RobotConstants.FrontTurret);
-//                robot.arm.setArm1Position(RobotConstants.DROPPINGARM);
-//                robot.arm.setArm2Position(RobotConstants.DROPPINGARM);
-//                robot.claw.ClawClose();
-//                robot.lift.setTargetHeight(0);
-//            })
-//            .waitSeconds(0.4)
-//            // TODO: .splineToLinearHeading(PARKINGPOSE)
-//            .build();
+        TrajectorySequence preloadCycle = robot.drive.trajectorySequenceBuilder(START_POSE)
+            .splineTo(PRELOAD_POSE, Math.PI / 6)
+            .waitSeconds(0.4)
+            .addTemporalMarker(0.3, () -> {
+                switch (liftPosition) {
+                    case 3:
+                        robot.lift.setTargetHeight(-1);
+                        break;
+                    case 2:
+//                        robot.lift.setTargetHeight(RobotConstants.MIDJUNCTION);
+                        break;
+                    case 1:
+//                        robot.lift.setTargetHeight(RobotConstants.LOWJUNCTION);
+                        break;
+                }
+            })
+            .addTemporalMarker(0.5, () -> {
+                robot.lift.setArmPos(LiftConstants.IdleArm);
+            })
+            .addTemporalMarker(0.9, () -> robot.lift.setClaw1Pos(LiftConstants.CLAWOPENPOS1))
+            .addTemporalMarker(1.3, () -> {
+                robot.lift.setClaw1Pos(LiftConstants.CLAWCLOSEPOS1);
+            })
+            .setReversed(false)
+            .lineToLinearHeading(PRELOADPOSCHANGE1_POSE)
+            .addTemporalMarker(1, () -> {
+                robot.lift.setTargetHeight(4);
+                robot.lift.setTargetRotation(0);
+                robot.lift.setArmPos(LiftConstants.IdleArm);
+            })
+            .lineToLinearHeading(PRELOADSTOP_POSE)
+            .build();
+
+        TrajectorySequence[] regularCycles = new TrajectorySequence[4];
+
+        for (int i = 0; i < 4; i++) {
+            double cone_height = CONESTACKINITHEIGHT[i];
+            regularCycles[i] = robot.drive.trajectorySequenceBuilder(PRELOADSTOP_POSE)
+                .setReversed(true)
+                .splineToConstantHeading(CYCLEMIDPOINT, Math.toRadians(0))
+                .addTemporalMarker(0.2, () -> {
+                    robot.lift.setTargetHeight(cone_height);
+                    robot.lift.setTargetRotation(LiftConstants.BackTurret);
+                })
+                .lineTo(CONESTACK)
+                .addTemporalMarker(0.35, () -> {
+                    robot.lift.setArmPos(LiftConstants.IntakingArm);
+                    robot.lift.setClaw1Pos(LiftConstants.CLAWCLOSEPOS1);
+                })
+                .addTemporalMarker(1.5, () -> {
+                    robot.lift.setTargetHeight(36);
+                    robot.lift.setTargetRotation(LiftConstants.FrontTurret);
+                })
+                .setReversed(false)
+                .lineTo(CYCLEMIDPOINT)
+                .addTemporalMarker(1.8, () -> {
+                    robot.lift.setArmPos(LiftConstants.IntakingArm);
+                })
+                .splineToConstantHeading(HIGHPOLE_POSE.vec(), Math.PI / 2)
+                .addTemporalMarker(2.6, () -> {
+                    robot.lift.setArmPos(LiftConstants.IntakingArm);
+                    robot.lift.setClaw1Pos(LiftConstants.CLAWOPENPOS1);
+                })
+                .build();
+        }
+
+        TrajectorySequence parking = robot.drive.trajectorySequenceBuilder(HIGHPOLE_POSE)
+            .setReversed(true)
+            .lineToLinearHeading(PARKINGPREP_POSE)
+            .addTemporalMarker(1, () -> {
+                robot.lift.setTargetRotation(LiftConstants.FrontTurret);
+                robot.lift.setArmPos(LiftConstants.IntakingArm);
+                robot.lift.setClaw1Pos(LiftConstants.CLAWCLOSEPOS1);
+                robot.lift.setTargetHeight(-1);
+            })
+            .waitSeconds(0.4)
+            // TODO: .splineToLinearHeading(PARKINGPOSE)
+            .build();
 
         robot.drive.setPoseEstimate(START_POSE);
 
@@ -159,28 +160,28 @@ public class RightRedSideAuto extends LinearOpMode {
             robot.update();
         }
 
-//        // Find out What "1.2" means
-//        for (int i = 0; i < 4; i++) {
-//            timer.reset();
-//            while (timer.milliseconds() < 500 && opModeIsActive()) {
-//                //relocalize();
-//                robot.drive.setDrivePower(new Pose2d(0.1, 0, 0));
-//                if (robot.lift.getDistance() < 1.2 && robot.drive.getPoseEstimate().getX() > 30) {
-////                    robot.lift.setDoorPos(LiftConstants.DOOR_CLOSE_POS);
-////                    robot.intake.setPower(-0.5);
-//                }
-//                robot.update();
-//            }
-//
-//            robot.drive.followTrajectorySequenceAsync(regularCycles[i]);
-//            while (!isStopRequested() && robot.drive.isBusy() && opModeIsActive()) {
-//                robot.update();
-//                if (robot.lift.getDistance() < 1.2 && robot.drive.getPoseEstimate().getX() > 30 && timer.milliseconds() > 2000) {
-////                    robot.lift.setDoorPos(LiftConstants.DOOR_CLOSE_POS);
-////                    robot.intake.setPower(-0.2);
-//                }
-//            }
-//        }
+        // Find out What "1.2" means
+        for (int i = 0; i < 4; i++) {
+            timer.reset();
+            while (timer.milliseconds() < 500 && opModeIsActive()) {
+                //relocalize();
+                robot.drive.setDrivePower(new Pose2d(0.1, 0, 0));
+                if (robot.lift.getDistance() < 1.2 && robot.drive.getPoseEstimate().getX() > 30) {
+//                    robot.lift.setDoorPos(LiftConstants.DOOR_CLOSE_POS);
+//                    robot.intake.setPower(-0.5);
+                }
+                robot.update();
+            }
+
+            robot.drive.followTrajectorySequenceAsync(regularCycles[i]);
+            while (!isStopRequested() && robot.drive.isBusy() && opModeIsActive()) {
+                robot.update();
+                if (robot.lift.getDistance() < 1.2 && robot.drive.getPoseEstimate().getX() > 30 && timer.milliseconds() > 2000) {
+//                    robot.lift.setDoorPos(LiftConstants.DOOR_CLOSE_POS);
+//                    robot.intake.setPower(-0.2);
+                }
+            }
+        }
     }
 
 //    public void relocalize() {

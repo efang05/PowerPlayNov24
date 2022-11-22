@@ -47,7 +47,7 @@ public class Lift implements Subsystem {
     private double turretpower;
 
     public static double kP = 0.6, kI = 0, kD = 0.01;
-    public static double tkP = 0.1, tkI = 0, tkD = 0.2;
+    public static double tkP = 0.65, tkI = 0, tkD = 0.0075;
 
     private PIDController pid;
     private PIDController turretpid;
@@ -91,7 +91,6 @@ public class Lift implements Subsystem {
         setTargetHeight(0);
         setTargetRotation(0);
         setArmPos(LiftConstants.IntakingArm);
-        //turretmotor.setTargetPosition(FrontTurret);
     }
 
     @Override
@@ -101,7 +100,7 @@ public class Lift implements Subsystem {
         double power;
         double tpower;
         power = 0.2;
-        tpower = 0.6;
+        tpower = 0.2;
 
         if (targetHeight == 0 && currentHeight < 0.3) {
             setLiftPower(0);
@@ -112,22 +111,20 @@ public class Lift implements Subsystem {
             setLiftPower(power);
         }
 
-        if ((targetRotation - currentRotation) < -3) {
-            turretmotor.setPower(-0.5);
-        } else if ((targetRotation - currentRotation) > 3) {
-            turretmotor.setPower(0.5);
-        } else if (Math.abs((targetRotation - currentRotation)) <= 3) {
-            turretmotor.setPower(0);
-        }
-
-
-//        if(targetRotation == 0 && Math.abs(currentRotation) < 4) {
-//            setTurretPower(0);
-//        } else {
-//            tpower += turretpid.calculate(currentRotation);
-//            setTurretPower(tpower/1.5);
+//        if ((targetRotation - currentRotation) < -3) {
+//            turretmotor.setPower(-0.5);
+//        } else if ((targetRotation - currentRotation) > 3) {
+//            turretmotor.setPower(0.5);
+//        } else if (Math.abs((targetRotation - currentRotation)) <= 3) {
+//            turretmotor.setPower(0);
 //        }
-        //turretpower = tpower;
+        turretpower = tpower;
+        if (Math.abs((targetRotation - currentRotation)) <= 3) {
+            setTurretPower(0);
+        } else {
+            tpower += turretpid.calculate(currentRotation);
+            setTurretPower(tpower);
+        }
     }
 
     @Override
@@ -141,15 +138,14 @@ public class Lift implements Subsystem {
     }
 
     public void setLiftPower(double power) {
-        power = Range.clip(power, -0.5,MAX_POWER);
+        power = Range.clip(power, -0.3,MAX_POWER);
         motor2.setPower(power);
         motor1.setPower(power);
     }
 
     public void setTurretPower(double power) {
-        power = Range.clip(power, -1,1);
+        power = Range.clip(power, -0.8,0.8);
         turretmotor.setPower(power);
-        turretpower = power;
     }
 
     public double getArmPosition() {
@@ -221,7 +217,4 @@ public class Lift implements Subsystem {
     public static double heightToExtensionLength(double height) {
         return height / Math.sin(Math.toRadians(70));
     }
-
-
-
 }

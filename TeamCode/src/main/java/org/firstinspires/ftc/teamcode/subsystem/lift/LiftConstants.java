@@ -8,7 +8,7 @@ public class LiftConstants {
     public static double IdleHeight = 4;
     public static double IntakingHeight = -1;
 
-    public static double CLAWCLOSEPOS1 = 0.2;
+    public static double CLAWCLOSEPOS1 = 0.25;
     public static double CLAWOPENPOS1 = 0.52;
 
     public static int FrontTurret = 0;
