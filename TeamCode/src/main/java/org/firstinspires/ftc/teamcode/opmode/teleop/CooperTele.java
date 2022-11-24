@@ -23,14 +23,13 @@ public class CooperTele extends LinearOpMode {
     double turretaddition = 40;
     double dtspeed = 1;
     double up = 37;
-    double mid = 22.5;
-    double low = 10.5;
+    double mid = 24.5;
+    double low = 12.5;
     double ground = -1;
     private double front = 0;
     private double back = 240;
     private double right = 120;
     private double left = -120;
-    public double lift = 1;
 
 
 
@@ -55,12 +54,12 @@ public class CooperTele extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
 
             //anti-tip + regular teleop code - ONLY ON PITCH RIGHT NOW
-            double pitch = robot.drive.getOrientation().firstAngle;
-            double antiTipMulti = 0.5;
+            double antiTipMulti = 1;
+            double correctedpitch = robot.drive.getOrientation().thirdAngle + 3.13;
             robot.drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y * dtspeed, //controls forward
-                            -gamepad1.left_stick_x * dtspeed, //controls strafing
+                            -gamepad1.left_stick_y * dtspeed + correctedpitch*antiTipMulti, //  controls forward
+                            -gamepad1.left_stick_x * dtspeed, +//controls strafing
                             -gamepad1.right_stick_x * dtspeed //controls turning
                     )
             );
@@ -77,14 +76,6 @@ public class CooperTele extends LinearOpMode {
                     dtspeed = 1;
             }
 
-            double ArmPower = gamepad2.right_stick_y;
-            if(robotState == robotState.LIFTED || robotState == robotState.INTAKING) {
-                if(ArmPower > 0.5){
-                    robot.lift.setArmPos(robot.lift.getArmPosition()+0.05);
-                }else if(ArmPower < 0.5){
-                    robot.lift.setArmPos(robot.lift.getArmPosition()-0.05);
-                }
-            }
 
             double TurretPower = gamepad2.right_stick_x;
             if (canTurn = true) {
@@ -169,35 +160,34 @@ public class CooperTele extends LinearOpMode {
                             robot.lift.setArmPos(LiftConstants.IdleArm);
                             timer.reset();
                             robotState = robotState.LIFTED;
-                            lift = 1;
                         }
                         if (gamepad2.dpad_right) {
                             robot.lift.setTargetHeight(mid);
                             robot.lift.setArmPos(LiftConstants.IdleArm);
                             timer.reset();
                             robotState = robotState.LIFTED;
-                            lift = 1;
                         }
                         if (gamepad2.dpad_left) {
                             robot.lift.setTargetHeight(low);
                             robot.lift.setArmPos(LiftConstants.IdleArm);
                             timer.reset();
                             robotState = robotState.LIFTED;
-                            lift = 1;
                         }
                         if (gamepad2.dpad_down) {
                             robot.lift.setTargetHeight(ground);
                             robot.lift.setArmPos(LiftConstants.IntakingArm);
                             timer.reset();
                             robotState = robotState.LIFTED;
-                            lift = 2;
                         }
                     }
                     break;
                 case LIFTED:
                     canTurn = true;
-                    if (lift == 1){
-                        robot.lift.setArmPos(LiftConstants.IdleArm);
+                    dtspeed = 0.4;
+                    if (gamepad2.left_stick_y > 0.5) {
+                        robot.lift.setArmPos(robot.lift.armServo2.getPosition() - 0.0125);
+                    } else if (gamepad2.left_stick_y < -0.5) {
+                        robot.lift.setArmPos(robot.lift.armServo2.getPosition() + 0.0125);
                     }
                     if (timer.milliseconds() > 750) {
                         if (gamepad2.dpad_down || gamepad1.dpad_down) {
@@ -206,15 +196,17 @@ public class CooperTele extends LinearOpMode {
                             robotState = robotState.GRABBED;
                         }
                         if (gamepad2.left_bumper || gamepad1.left_bumper) {
+                            robot.lift.setArmPos(LiftConstants.IntakingArm);
                             timer.reset();
                             robotState = robotState.DROPPED;
                         }
                     }
                     break;
                 case DROPPED:
+                    dtspeed = 1;
                     canTurn = false;
                     robot.lift.setClaw1Pos(LiftConstants.CLAWOPENPOS1);
-                    if (timer.milliseconds() > 1000) {
+                    if (timer.milliseconds() > 450) {
                         robot.lift.setTargetHeight(LiftConstants.IdleHeight);
                         robot.lift.setTargetRotation(front);
                         robotState = robotState.IDLE;
@@ -234,6 +226,7 @@ public class CooperTele extends LinearOpMode {
             telemetry.addData("turrettimer", turrettimer.milliseconds());
             telemetry.addData("dtspeed", dtspeed);
             telemetry.addData("slide power", robot.lift.motor2.getPower());
+
             robot.update();
         }
     }

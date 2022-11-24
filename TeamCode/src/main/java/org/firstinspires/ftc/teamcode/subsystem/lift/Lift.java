@@ -5,19 +5,16 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import static org.firstinspires.ftc.teamcode.subsystem.lift.LiftConstants.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
@@ -47,7 +44,7 @@ public class Lift implements Subsystem {
     private double turretpower;
 
     public static double kP = 0.6, kI = 0, kD = 0.01;
-    public static double tkP = 0.65, tkI = 0, tkD = 0.0075;
+    public static double tkP = 0.3, tkI = 0, tkD = 0.009;
 
     private PIDController pid;
     private PIDController turretpid;
@@ -58,7 +55,8 @@ public class Lift implements Subsystem {
     private double currentHeight = 0;
     private double currentRotation = 0;
     private double targetRotation = 0;
-
+    private String mode = "";
+    private ElapsedTime timer = new ElapsedTime();
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
         motor1 = hardwareMap.get(DcMotorEx.class, "lift1");
@@ -67,7 +65,6 @@ public class Lift implements Subsystem {
 
         //reverse correctly
         motor1.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         clawServo = hardwareMap.get(Servo.class, "claw");
@@ -85,12 +82,14 @@ public class Lift implements Subsystem {
 
     @Override
     public void init() {
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        setTargetHeight(0);
         setTargetRotation(0);
-        setArmPos(LiftConstants.IntakingArm);
+        setClaw1Pos(CLAWCLOSEPOS1);
+        if (timer.milliseconds() > 1500) {
+            setArmPos(IdleArm);
+            setTargetHeight(IdleHeight);
+        }
     }
 
     @Override
@@ -100,7 +99,7 @@ public class Lift implements Subsystem {
         double power;
         double tpower;
         power = 0.2;
-        tpower = 0.2;
+        tpower = 0;
 
         if (targetHeight == 0 && currentHeight < 0.3) {
             setLiftPower(0);
@@ -121,8 +120,17 @@ public class Lift implements Subsystem {
         turretpower = tpower;
         if (Math.abs((targetRotation - currentRotation)) <= 3) {
             setTurretPower(0);
-        } else {
+        } else if (currentHeight > 30) {
+            mode = "HIGH";
+            turretpid.setPID(0.65, 0.0, 0.009);
             tpower += turretpid.calculate(currentRotation);
+            turretpower = tpower;
+            setTurretPower(tpower);
+        } else {
+            mode = "LOW";
+            turretpid.setPID(0.4, 0, 0.02);
+            tpower += turretpid.calculate(currentRotation);
+            turretpower = tpower;
             setTurretPower(tpower);
         }
     }
@@ -131,7 +139,6 @@ public class Lift implements Subsystem {
     public void update(TelemetryPacket packet) {
 
     }
-
 
     public double getDistance() {
         return colorRangeSensor.getDistance(DistanceUnit.INCH);
@@ -216,5 +223,14 @@ public class Lift implements Subsystem {
 
     public static double heightToExtensionLength(double height) {
         return height / Math.sin(Math.toRadians(70));
+    }
+
+    public String getTurretMode() {
+        return mode;
+    }
+
+    public ElapsedTime.Resolution getTimer() {
+        return timer.getResolution();
+
     }
 }

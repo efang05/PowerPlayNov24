@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class LiftConstants {
     //lift heights
-    public static double IdleHeight = 4;
+    public static double IdleHeight = 5;
     public static double IntakingHeight = -1;
 
     public static double CLAWCLOSEPOS1 = 0.25;
@@ -16,8 +16,8 @@ public class LiftConstants {
     public static int RightTurret = -56;
     public static int BackTurret = 102;
 
-    public static double IdleArm = 1;
-    public static double IntakingArm = 0.2;
+    public static double IdleArm = 0.75;
+    public static double IntakingArm = 0.1;
     public static double GroundArm = 0.0;
     public static double HighArm = 0.2;
     public static double LowArm = 0.2;

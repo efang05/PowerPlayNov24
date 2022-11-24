@@ -49,7 +49,7 @@ public class TwoManCarry extends LinearOpMode {
             //robot.lift.turretmotor.setTargetRotation(50);
 
             //anti-tip + regular teleop code - ONLY ON PITCH RIGHT NOW
-            double pitch = robot.drive.getOrientation().firstAngle;
+            //double pitch = robot.drive.getOrientation().firstAngle;
 
 
             double antiTipMulti = 0.5;
@@ -200,7 +200,7 @@ public class TwoManCarry extends LinearOpMode {
             telemetry.addData("Height",robot.lift.getHeight());
             telemetry.addData("goal", goal);
             telemetry.addData("Distance", robot.lift.getDistance());
-            telemetry.addData("Orientation", robot.drive.getOrientation());
+            //telemetry.addData("Orientation", robot.drive.getOrientation());
             telemetry.addData("armpos1", robot.lift.armServo1.getPosition());
             telemetry.addData("armpos2", robot.lift.armServo2.getPosition());
             telemetry.addData("timer", timer.milliseconds());
